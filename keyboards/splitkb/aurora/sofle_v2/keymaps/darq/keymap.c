@@ -293,7 +293,7 @@ void render_layer_state_custom(void) {
     }
 }
 
-/* KEYBOARD PET START */
+/* ANIMATION */
 
 /* settings */
 #    define MIN_WALK_SPEED      10
@@ -435,7 +435,7 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
     }
 }
 
-/* KEYBOARD PET END */
+/* ANIMATION END */
  
 
 
@@ -443,14 +443,14 @@ bool oled_task_user(void) {
     current_wpm   = get_current_wpm();
     led_usb_state = host_keyboard_led_state();
     if (is_keyboard_master()) {
-        /* render_logo_custom();
+        render_logo_custom();
         render_logo_text_custom();
         render_space_custom();
         render_layer_state_custom();
         render_space_custom();
         render_mod_status_gui_alt_custom(get_mods()|get_oneshot_mods());
         render_mod_status_ctrl_shift_custom(get_mods()|get_oneshot_mods());
-        render_kb_LED_state_custom(); */
+        render_kb_LED_state_custom();
         render_luna(0, 13);
     } else {
         render_luna(0, 13);
@@ -459,6 +459,9 @@ bool oled_task_user(void) {
     return false;
 }
 #endif
+
+
+/* special characters pressed */
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   switch (keycode) {
