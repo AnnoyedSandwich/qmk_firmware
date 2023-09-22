@@ -3,3 +3,7 @@ OLED_DRIVER_ENABLE = yes
 WPM_ENABLE = yes
 SPLIT_KEYBOARD = yes
 CONSOLE_ENABLE = yes
+NKRO_ENABLE = yes
+VPATH  +=  keyboards/gboards/
+COMBO_ENABLE=yes 
+CAPS_WORD_ENABLE = yes

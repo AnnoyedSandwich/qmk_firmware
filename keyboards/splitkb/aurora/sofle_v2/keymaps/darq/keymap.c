@@ -1,9 +1,9 @@
 #include QMK_KEYBOARD_H
+#include "g/keymap_combo.h"
 #include <stdio.h>
 #include "print.h"
 #include "oled.c"
 #include "encoder.c"
-
 
 char wpm_str[10];
 
@@ -17,33 +17,102 @@ char wpm_str[10];
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-	[0] = LAYOUT(   KC_GRV    , KC_1      , KC_2      , KC_3      , KC_4      , KC_5      ,                             KC_6      , KC_7      , KC_8      , KC_9      , KC_0      , KC_GRV    ,
-                    KC_ESC    , KC_Q      , KC_W      , KC_E      , KC_R      , KC_T      ,                             KC_Y      , KC_U      , KC_I      , KC_O      , KC_P      , KC_BSPC   ,
-                    KC_TAB    , KC_A      , KC_S      , KC_D      , KC_F      , KC_G      ,                             KC_H      , KC_J      , KC_K      , KC_L      , KC_SCLN   , KC_QUOT   ,
-                    KC_LSFT   , KC_Z      , KC_X      , KC_C      , KC_V      , KC_B      , KC_MUTE   , XXXXXXX   , KC_N      , KC_M      , KC_COMM   , KC_DOT    , KC_SLSH   , KC_RSFT   ,
-                                            KC_LGUI   , KC_LALT   , KC_LCTL   , MO(1)     , KC_ENT    , KC_SPC    , MO(2)     , KC_RCTL   , KC_RALT   , _______),
-	[1] = LAYOUT(   _______   , KC_F1     , KC_F2     , KC_F3     , KC_F4     , KC_F5     ,                             KC_F6     , KC_F7     , KC_F8     , KC_F9     , KC_F10    , KC_F11    ,
-                    KC_GRV    , KC_1      , KC_2      , KC_3      , KC_4      , KC_5      ,                             KC_6      , KC_7      , KC_8      , KC_9      , KC_0      , KC_F12    ,
-                    _______   , KC_EXLM   , KC_AT     , KC_HASH   , KC_DLR    , KC_PERC   ,                             KC_CIRC   , KC_AMPR   , KC_ASTR   , KC_LPRN   , KC_RPRN   , KC_PIPE   ,
-                    _______   , KC_EQL    , KC_MINS   , KC_PLUS   , KC_LCBR   , KC_RCBR   , _______   , _______   , KC_LBRC   , KC_RBRC   , KC_SCLN   , KC_COLN   , KC_BSLS   , _______   ,
-                                            _______   , _______   , _______   , _______   , _______   , _______   , MO(3)     , _______   , _______   , _______),
-	[2] = LAYOUT(   _______   , _______   , _______   , _______   , _______   , _______   ,                             _______   , _______   , _______   , _______   , _______   , _______   ,
-                    _______   , KC_INS    , KC_PSCR   , KC_APP    , XXXXXXX   , XXXXXXX   ,                             KC_PGUP   , C(KC_LEFT), KC_UP     , C(KC_RGHT), C(KC_BSPC), KC_BSPC   ,
-                    _______   , KC_LALT   , KC_LCTL   , KC_LSFT   , XXXXXXX   , KC_CAPS   ,                             KC_PGDN   , KC_LEFT   , KC_DOWN   , KC_RGHT   , KC_DEL    , KC_BSPC   ,
-                    _______   , C(KC_Z)   , C(KC_X)   , C(KC_C)   , C(KC_V)   , XXXXXXX   , _______   , _______   , XXXXXXX   , KC_HOME   , XXXXXXX   , KC_END    , XXXXXXX   , _______   ,
-                                            _______   , _______   , _______   , MO(3)     , _______   , _______   , _______   , _______   , _______   , _______),
-	[3] = LAYOUT(   XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   ,                             XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   ,
-                    XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   ,                             XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   ,
-                    XXXXXXX   , RGB_TOG   , RGB_HUI   , RGB_SAI   , RGB_VAI   , XXXXXXX   ,                             XXXXXXX   , KC_VOLD   , KC_MUTE   , KC_VOLU   , XXXXXXX   , XXXXXXX   ,
-                    XXXXXXX   , RGB_MOD   , RGB_HUD   , RGB_SAD   , RGB_VAD   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , KC_MPRV   , KC_MPLY   , KC_MNXT   , XXXXXXX   , XXXXXXX   ,
-                                            _______   , _______   , _______   , _______   , _______   , _______   , _______   , _______   , _______   , TG(4)),
-    [4] = LAYOUT(   KC_5,  KC_ESC,  KC_1,   KC_2,	KC_3,	KC_4,                             _______, _______, _______, _______, _______, _______, 
-     		        KC_6,  KC_TAB, KC_Q,   KC_W,    KC_E,	KC_R,                             _______, _______, _______, _______, _______, _______, 
-  			        KC_7, KC_LSFT, KC_A,   KC_S,    KC_D,	KC_F,                             _______, _______, _______, _______, _______, _______, 
-     		        KC_8, KC_LCTL, KC_Z,   KC_X,    KC_C,	KC_V, _______  ,  _______,        _______, _______, _______, _______, _______, _______, 
-                                KC_LGUI   , KC_LALT   , KC_LCTL   , KC_K     , KC_SPC    , KC_ENT    , _______     , _______   , TT(4)   , DF(0))                                
-};
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/* COLEMAK DH                                                                                                                                                                               //
+ * ,-----------------------------------------.                    ,-----------------------------------------.                                                                               //
+ * |   `  |   1  |   2  |   3  |   4  |   5  |                    |   6  |   7  |   8  |   9  |   0  |  `   |                                                                               //
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|                                                                               //
+ * | Esc  |   Q  |   W  |   F  |   P  |   B  |                    |   J  |   L  |   U  |   Y  |  ;   | Bspc |                                                                               //
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|                                                                               //
+ * | Tab |   A  |   R  |   S  |   T  |   G  |-------.    ,-------|   M  |   N  |   E  |   I  |   O  |  '   |                                                                                //
+ * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|                                                                               //
+ * |LShift|   Z  |   X  |   C  |   D  |   V  |-------|    |-------|   K  |   H  |   ,  |   .  |   /  |RShift|                                                                               //
+ * `-----------------------------------------/      /     \      \-----------------------------------------'                                                                                //
+ *            | LGUI | LAlt | LCTR |LOWER | /Enter /       \Space \  |RAISE | RCTR | RAlt | RGUI |                                                                                          //
+ *            |      |      |      |      |/      /         \      \ |      |      |      |      |                                                                                          //
+ *            `----------------------------------'           '------''---------------------------'                                                                                          //
+ */                                                                                                                                                                                         //
+  [0] = LAYOUT(     KC_GRV    , KC_1      , KC_2      , KC_3      , KC_4      , KC_5      ,                         KC_6      , KC_7      , KC_8      , KC_9      , KC_0      , KC_GRV    , //
+                    KC_ESC    , KC_Q      , KC_W      , KC_F      , KC_P      , KC_B      ,                         KC_J      , KC_L      , KC_U      , KC_Y      , KC_SCLN   , KC_BSPC   , //
+                    KC_TAB    , KC_A      , KC_R      , KC_S      , KC_T      , KC_G      ,                         KC_M      , KC_N      , KC_E      , KC_I      , KC_O      , KC_QUOT   , //
+                    KC_LSFT   , KC_Z      , KC_X      , KC_C      , KC_D      , KC_V      , KC_MUTE   , XXXXXXX   , KC_K      , KC_H      , KC_COMM   , KC_DOT    , KC_SLSH   , KC_RSFT   , //
+                                            KC_LGUI   , KC_LALT   , KC_LCTL   , MO(2)     , KC_ENT    , KC_SPC    , MO(3)     , KC_RCTL   , KC_RALT   , _______),                           //
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/* * QWERTY                                                                                                                                                                                 //
+ * ,-----------------------------------------.                    ,-----------------------------------------.                                                                               //
+ * |   `  |   1  |   2  |   3  |   4  |   5  |                    |   6  |   7  |   8  |   9  |   0  |  `   |                                                                               //
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|                                                                               //
+ * | Esc  |   Q  |   W  |   E  |   R  |   T  |                    |   Y  |   U  |   I  |   O  |   P  | Bspc |                                                                               //
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|                                                                               //
+ * | Tab |   A  |   S  |   D  |   F  |   G  |-------.    ,-------|   H  |   J  |   K  |   L  |   ;  |  '   |                                                                                //
+ * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|                                                                               //
+ * |LShift|   Z  |   X  |   C  |   V  |   B  |-------|    |-------|   N  |   M  |   ,  |   .  |   /  |RShift|                                                                               //
+ * `-----------------------------------------/      /     \      \-----------------------------------------'                                                                                //
+ *            | LGUI | LAlt | LCTR |LOWER | /Enter /       \Space \  |RAISE | RCTR | RAlt | RGUI |                                                                                          //
+ *            |      |      |      |      |/      /         \      \ |      |      |      |      |                                                                                          //
+ *            `----------------------------------'           '------''---------------------------'                                                                                          //
+ */                                                                                                                                                                                         //
+  [1] = LAYOUT(     KC_GRV    , KC_1      , KC_2      , KC_3      , KC_4      , KC_5      ,                         KC_6      , KC_7      , KC_8      , KC_9      , KC_0      , KC_GRV    , //
+                    KC_ESC    , KC_Q      , KC_W      , KC_E      , KC_R      , KC_T      ,                         KC_Y      , KC_U      , KC_I      , KC_O      , KC_P      , KC_BSPC   , //
+                    KC_TAB    , KC_A      , KC_S      , KC_D      , KC_F      , KC_G      ,                         KC_H      , KC_J      , KC_K      , KC_L      , KC_SCLN   , KC_QUOT   , //
+                    KC_LSFT   , KC_Z      , KC_X      , KC_C      , KC_V      , KC_B      , KC_MUTE   , XXXXXXX   , KC_N      , KC_M      , KC_COMM   , KC_DOT    , KC_SLSH   , KC_RSFT   , //
+                                            KC_LGUI   , KC_LALT   , KC_LCTL   , MO(2)     , KC_ENT    , KC_SPC    , MO(3)     , KC_RCTL   , KC_RALT   , _______),                           //
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	[2] = LAYOUT(     KC_PPLS   , KC_F1     , KC_F2     , KC_F3     , KC_F4     , KC_F5     ,                         KC_F6     , KC_F7     , KC_F8     , KC_F9     , KC_F10    , KC_F11    , //
+                    KC_GRV    , KC_COMM   , KC_P7     , KC_P8     , KC_P9     , KC_LCBR   ,                         KC_RCBR   , KC_CIRC   , KC_AMPR   , KC_ASTR   , KC_EQL    , KC_DLR    , //
+                    _______   , KC_PDOT   , KC_P4     , KC_P5     , KC_P6     , KC_LPRN   ,                         KC_RPRN   , KC_EXLM   , KC_AT     , KC_HASH   , KC_PERC   , KC_PIPE   , //
+                    _______   , KC_P0     , KC_P1     , KC_P2     , KC_P3     , KC_LBRC   , _______   , _______   , KC_RBRC   , KC_UNDS   , KC_SCLN   , KC_COLN   , KC_MINS   , _______   , //
+                                            _______   , _______   , _______   , _______   , _______   , _______   , MO(4)     , _______   , _______   , _______),                           //KC_MINS
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	[3] = LAYOUT(     _______   , _______   , _______   , _______   , _______   , _______   ,                         _______   , _______   , _______   , _______   , _______   , _______   , //
+                    _______   , KC_INS    , KC_PSCR   , KC_APP    , XXXXXXX   , XXXXXXX   ,                         KC_PGUP   , C(KC_LEFT), KC_UP     , C(KC_RGHT), C(KC_BSPC), KC_BSPC   , //
+                    _______   , KC_LALT   , KC_LCTL   , KC_LSFT   , XXXXXXX   , KC_CAPS   ,                         KC_PGDN   , KC_LEFT   , KC_DOWN   , KC_RGHT   , KC_DEL    , KC_BSPC   , //
+                    _______   , C(KC_Z)   , C(KC_X)   , C(KC_C)   , C(KC_V)   , XXXXXXX   , _______   , _______   , XXXXXXX   , KC_HOME   , XXXXXXX   , KC_END    , XXXXXXX   , _______   , //
+                                            _______   , _______   , _______   , MO(4)     , _______   , _______   , _______   , _______   , _______   , _______),                           //
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// DF0 sets layout to Colemak DH
+// DF1 sets layout to QWERTY
+// DF5 sets layout to gaming
+	[4] = LAYOUT(     DF(0)     , DF(1)     , TG(5)     , XXXXXXX   , XXXXXXX   , XXXXXXX   ,                         XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , //
+                    XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   ,                         XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , //
+                    XXXXXXX   , RGB_TOG   , RGB_HUI   , RGB_SAI   , RGB_VAI   , XXXXXXX   ,                         XXXXXXX   , KC_VOLD   , KC_MUTE   , KC_VOLU   , XXXXXXX   , XXXXXXX   , //
+                    XXXXXXX   , RGB_MOD   , RGB_HUD   , RGB_SAD   , RGB_VAD   , XXXXXXX   , XXXXXXX   , XXXXXXX   , XXXXXXX   , KC_MPRV   , KC_MPLY   , KC_MNXT   , XXXXXXX   , XXXXXXX   , //
+                                            _______   , _______   , _______   , _______   , _______   , _______   , _______   , _______   , _______   , TG(5)),                             //
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+/* * GAMING
+ * TT(1): hold for momentary QWERTY layer, tap three times to switch to QWERTY layer                                                                                                        //                                                                                                                                                                                 //
+ * ,-----------------------------------------.                    ,-----------------------------------------.                                                                               //
+ * |Enter |  ESC |   1  |   2  |   3  |   4  |                    |   6  |   7  |   8  |   9  |   0  |  `   |                                                                               //
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|                                                                               //
+ * |   5  |  TAB |   Q  |   W  |   E  |   R  |                    |   Y  |   U  |   I  |   O  |   P  | Bspc |                                                                               //
+ * |------+------+------+------+------+------|                    |------+------+------+------+------+------|                                                                               //
+ * |   6  |LShift|   A  |   S  |   D  |   F  |-------.    ,-------|   H  |   J  |   K  |   L  |   ;  |  '   |                                                                               //
+ * |------+------+------+------+------+------|       |    |       |------+------+------+------+------+------|                                                                               //
+ * |   7  |LCTRL |   Z  |   X  |   C  |   V  |-------|    |-------|   N  |   M  |   ,  |   .  |   /  |RShift|                                                                               //
+ * `-----------------------------------------/      /     \      \-----------------------------------------'                                                                                //
+ *            |   T  |   B  |   G  | LAlt | /Space /       \Enter \  |RAISE | RCTR | RAlt | RGUI |                                                                                          //
+ *            |      |      |      |      |/      /         \      \ |      |      |      |      |                                                                                          //
+ *            `----------------------------------'           '------''---------------------------'                                                                                          //
+ */                                                                                                                                                                                         //
+  [5] = LAYOUT(     KC_5      ,  KC_ESC   , KC_1      , KC_2      ,	KC_3      ,	KC_4      ,                         _______   , _______   , _______   , _______   , _______   , _______   , //
+                    KC_6      ,  KC_TAB   , KC_Q      , KC_W      , KC_E      ,	KC_R      ,                         _______   , _______   , _______   , _______   , _______   , _______   , //
+                    KC_7      , KC_LSFT   , KC_A      , KC_S      , KC_D      ,	KC_F      ,                         _______   , _______   , _______   , _______   , _______   , _______   , //
+                    KC_8      , KC_LCTL   , KC_Z      , KC_X      , KC_C      ,	KC_V      , _______   , _______   , _______   , _______   , _______   , _______   , _______   , _______   , //
+                                            KC_T      , KC_B      , KC_G      , KC_LALT   , KC_SPC    , KC_ENT    ,   TT(5)   , _______   , MO(1)     , _______  ),                         //
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+};
 
 
 void keyboard_pre_init_user(void) {
@@ -53,3 +122,13 @@ void keyboard_pre_init_user(void) {
 
 
 
+/*
+[2] = LAYOUT(     _______   , KC_F1     , KC_F2     , KC_F3     , KC_F4     , KC_F5     ,                         KC_F6     , KC_F7     , KC_F8     , KC_F9     , KC_F10    , KC_F11    , //
+                    KC_GRV    , KC_1      , KC_2      , KC_3      , KC_4      , KC_5      ,                         KC_6      , KC_7      , KC_8      , KC_9      , KC_0      , KC_F12    , //
+                    _______   , KC_EXLM   , KC_AT     , KC_HASH   , KC_DLR    , KC_PERC   ,                         KC_CIRC   , KC_AMPR   , KC_ASTR   , KC_LPRN   , KC_RPRN   , KC_PIPE   , //
+                    _______   , KC_EQL    , KC_MINS   , KC_PLUS   , KC_LCBR   , KC_RCBR   , _______   , _______   , KC_LBRC   , KC_RBRC   , KC_SCLN   , KC_COLN   , KC_BSLS   , _______   , //
+                                            _______   , _______   , _______   , _______   , _______   , _______   , MO(4)     , _______   , _______   , _______),                           //
+
+
+
+*/

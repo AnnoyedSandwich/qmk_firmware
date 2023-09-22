@@ -1,8 +1,10 @@
 #include QMK_KEYBOARD_H
+#include <stdbool.h> 
 
 
 enum layers {
-  _DEFAULT,
+  _COLEMAK,
+  _QWERTY,
   _LOWER,
   _RAISE,
   _ADJUST
@@ -232,15 +234,47 @@ void render_layer_state_custom(void) {
       0x20, 0xdd, 0xde, 0xdf, 0x20, 0};
   if(layer_state_is(_LOWER)) {
     oled_write_P(lower_layer, false);
-    xprintf("lower \n");
   } else if(layer_state_is(_RAISE)) {
     oled_write_P(raise_layer, false);
-  } else if(layer_state_is(_DEFAULT)) {
+  } else if(layer_state_is(_QWERTY) || layer_state_is(_COLEMAK)) {
     oled_write_P(default_layer, false);
   } else {
     oled_write_P(adjust_layer, false);
   }
 }
+
+//is this nice? no. does it work? yes. do i care enough to make it proper? not at all lmao 
+
+int activeAlphas = 0;
+
+
+void render_keymap(void) {
+    switch (get_highest_layer(layer_state | default_layer_state)) {
+      case 0:
+          activeAlphas = 0;
+          break;
+      case 1:
+          activeAlphas = 1;
+          break;
+      case 5:
+          activeAlphas = 4;
+          break;
+    }
+
+    switch(activeAlphas) {
+      case 0:
+        oled_write_P(PSTR(" cole"), false);
+        break;
+      case 1:
+        oled_write_P(PSTR(" qwer"), false);
+        break;
+      case 4:
+        oled_write_P(PSTR(" game"), false);
+        break;
+    }
+}
+
+
 
 /* ANIMATION */
 
@@ -262,6 +296,7 @@ uint8_t current_frame = 0;
 int   current_wpm = 0;
 led_t led_usb_state;
 
+bool caps_word = false;
 bool isBarking = false;
 bool isSneaking = false;
 bool isJumping  = false;
@@ -271,7 +306,13 @@ void render_test(void) {
   led_t led_usb_state = host_keyboard_led_state();
   oled_write_P(led_usb_state.caps_lock ? PSTR("S") : PSTR("noS"), false);
 }
-
+    void caps_word_set_user(bool active) {
+    if (active) {
+        caps_word = true;
+    } else {
+        caps_word = false;
+    }
+    }
 /* logic */
 static void render_luna(int LUNA_X, int LUNA_Y) {
   /* Sit */
@@ -349,8 +390,11 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
     /* switch frame */
     current_frame = (current_frame + 1) % 2;
 
+
+
+
     /* current status */
-    if (led_usb_state.caps_lock) {
+    if (led_usb_state.caps_lock || caps_word) {
       oled_write_raw_P(bark[current_frame], ANIM_SIZE);
 
     } else if (isSneaking) {
@@ -365,10 +409,11 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
     } else {
       oled_write_raw_P(run[current_frame], ANIM_SIZE);
     }
+
   }
 
 #    if OLED_TIMEOUT > 0
-  /* the animation prevents the normal timeout from occuring */
+  // the animation prevents the normal timeout from occuring 
   if (last_input_activity_elapsed() > OLED_TIMEOUT && last_led_activity_elapsed() > OLED_TIMEOUT) {
     oled_off();
     return;
@@ -401,6 +446,7 @@ static void render_luna(int LUNA_X, int LUNA_Y) {
       render_mod_status_ctrl_shift_custom(get_mods()|get_oneshot_mods());
       render_kb_LED_state_custom();
     } else {
+      render_keymap();
       render_forest_custom();
       render_luna(0, 13);
 
